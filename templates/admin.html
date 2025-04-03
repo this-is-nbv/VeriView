@@ -74,6 +74,25 @@
             margin-top: 15px;
             display: none;
         }
+
+        #backButton {
+    background: transparent;
+    color: #FFD700; /* Match the yellow color used in your buttons */
+    border: none;
+    font-size: 100px; /* Larger size for better visibility */
+    font-weight: bold;
+    cursor: pointer;
+    position: absolute;
+    top: 10px;
+    left: 20px;
+    padding: 10px;
+    z-index: 10; /* Ensure it stays on top */
+}
+
+#backButton:hover {
+    color: #e6c200; /* Slightly darker yellow to match the hover effect */
+}
+
     </style>
 </head>
 <body>
@@ -102,10 +121,17 @@
         </form>
 
         <button id="trainButton" class="button">Train Model</button>
+        <!-- Back Button -->
+<button id="backButton" onclick="redirectTo()">←</button>
+
         <p id="statusMessage" class="status"></p>
     </div>
 
     <script>
+        function redirectTo(page) {
+            // Redirect to the page (use Flask route name, e.g., '/detector' in this case)
+            window.location.href = "/";
+        }
         document.getElementById("uploadForm").addEventListener("submit", function(event) {
             event.preventDefault();
 
@@ -164,7 +190,7 @@
                 return;
             }
 
-            statusMessage.innerText = "Training model...";
+            statusMessage.innerText = "Training model...Kindly wait...";
             statusMessage.style.display = "block";
 
             fetch("/train_models", {
