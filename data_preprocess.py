@@ -198,8 +198,8 @@ def predict():
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-def train_all_models():
-    """Train models for all dataset files in the 'datasets' folder."""
+def train_all_models(cat):
+    """Train models for all dataset files in the 'datasets' folder that match the category."""
     if not os.path.exists(UPLOAD_FOLDER):
         print("No dataset folder found!")
         return
@@ -213,17 +213,23 @@ def train_all_models():
     for dataset_file in dataset_files:
         category = dataset_file.replace('.csv', '')  # Extract category from filename
         dataset_path = os.path.join(UPLOAD_FOLDER, dataset_file)
-        print(f"Training model for category: {category}")
         try:
-            train_category_model(category, dataset_path)
-            print(f"✅ Model for '{category}' trained successfully and saved in '{MODEL_FOLDER}'")
+            # Check if the category matches the one passed in the 'cat' parameter
+            if category == cat:
+                print(f"Training model for category: {category}")
+                train_category_model(category, dataset_path)
+                print(f"✅ Model for '{category}' trained successfully and saved in '{MODEL_FOLDER}'")
         except Exception as e:
             print(f"❌ Failed to train model for '{category}': {str(e)}")
 
 @app.route('/train_models', methods=['POST'])
 def train_models():
     try:
-        train_all_models()
+        data = request.get_json()
+        cat = data.get('category')  # Extract category
+        if cat is None:
+            return jsonify({'error': 'Category is required'}), 400
+        train_all_models(cat)
         return jsonify({'message': 'Training started successfully!'})
     except Exception as e:
         return jsonify({'error': f'Training failed: {str(e)}'}), 500
